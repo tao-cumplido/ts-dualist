@@ -5,29 +5,34 @@ import path from 'node:path';
 import { $ } from 'execa';
 import { parseTsconfig, type TsConfigJsonResolved } from 'get-tsconfig';
 import { loadJsonFile } from 'load-json-file';
-import meow from 'meow';
 import { writeJsonFile } from 'write-json-file';
 import z from 'zod';
 
-const cli = meow({
-	importMeta: import.meta,
-	flags: {
-		project: {
-			shortFlag: 'p',
-			type: 'string',
-			default: 'tsconfig.json',
-		},
-	},
-});
+const args = process.argv.slice(2);
 
-const tsConfig: TsConfigJsonResolved & Record<string, unknown> = parseTsconfig(cli.flags.project);
+if (args.find((value) => value === '--build' || value === '-b')) {
+	throw new Error(`Build mode not supported.`);
+}
+
+const projectIndex = args.findIndex((value) => value === '--project' || value === '-p');
+const project = args[projectIndex + 1] ?? 'tsconfig.json';
+
+if (project.startsWith('-') || project === args[0]) {
+	throw new Error(`invalid --project value`);
+}
+
+if (projectIndex >= 0) {
+	args.splice(projectIndex, 2);
+}
+
+const tsConfig: TsConfigJsonResolved & Record<string, unknown> = parseTsconfig(project);
 const packageJson = z.record(z.unknown()).parse(await loadJsonFile('package.json'));
 
 const dualistConfig = z.object({
 	exports: z.record(z.string()).default({
 		'.': 'index.ts',
 	}),
-}).parse(packageJson['ts-dualist'] ?? tsConfig['ts-dualist'] ?? {});
+}).parse(tsConfig['ts-dualist'] ?? {});
 
 const { compilerOptions = {} } = tsConfig;
 
@@ -36,7 +41,7 @@ const { outDir = 'dist' } = compilerOptions;
 for (const type of ['module', 'commonjs']) {
 	packageJson.type = type;
 	await writeJsonFile('package.json', packageJson, { detectIndent: true });
-	await $`tsc --project ${cli.flags.project} --outDir ${path.join(outDir, type)}`;
+	await $`tsc --project ${project} --outDir ${path.join(outDir, type)} ${args.join(' ')}`;
 	await writeJsonFile(path.join(outDir, type, 'package.json'), { type });
 }
 

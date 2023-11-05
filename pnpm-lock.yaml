@@ -14,9 +14,6 @@ dependencies:
   load-json-file:
     specifier: 7.0.1
     version: 7.0.1
-  meow:
-    specifier: ^12.1.1
-    version: 12.1.1
   write-json-file:
     specifier: 5.0.0
     version: 5.0.0
@@ -1457,11 +1454,6 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
-
-  /meow@12.1.1:
-    resolution: {integrity: sha512-BhXM0Au22RwUneMPwSCnyhTOizdWoIEPU9sp0Aqa1PnDMR5Wv2FGXYDjuzJEIX+Eo2Rb8xuYe5jrnm5QowQFkw==}
-    engines: {node: '>=16.10'}
-    dev: false
 
   /merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
