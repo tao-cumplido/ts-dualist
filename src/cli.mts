@@ -38,39 +38,46 @@ const { compilerOptions = {} } = tsConfig;
 
 const { outDir = 'dist' } = compilerOptions;
 
-for (const type of ['module', 'commonjs']) {
-	packageJson.type = type;
-	await writeJsonFile('package.json', packageJson, { detectIndent: true });
-	await $`tsc --project ${project} --outDir ${path.join(outDir, type)} ${args.join(' ')}`;
-	await writeJsonFile(path.join(outDir, type, 'package.json'), { type });
-}
+try {
+	for (const type of ['module', 'commonjs']) {
+		packageJson.type = type;
+		await writeJsonFile('package.json', packageJson, { detectIndent: true });
 
-delete packageJson.type;
+		if (args.length) {
+			await $`tsc --project ${project} --outDir ${path.join(outDir, type)} ${args}`;
+		} else {
+			await $`tsc --project ${project} --outDir ${path.join(outDir, type)}`;
+		}
 
-const exports: any = packageJson.exports ?? {};
-
-for (const [entryPoint, source] of Object.entries(dualistConfig.exports)) {
-	const { dir, name } = path.posix.parse(source);
-
-	const makeExport = (type: string) => {
-		const artifactDir = path.posix.join(outDir, type, dir);
-		return {
-			types: `./${artifactDir}/${name}.d.ts`,
-			default: `./${artifactDir}/${name}.js`,
-		};
-	};
-
-	exports[entryPoint] = {
-		import: makeExport('module'),
-		require: makeExport('commonjs'),
-	};
-
-	if (entryPoint === '.') {
-		packageJson.types = exports['.'].require.types;
-		packageJson.main = exports['.'].require.default;
+		await writeJsonFile(path.join(outDir, type, 'package.json'), { type });
 	}
+
+	const exports: any = packageJson.exports ?? {};
+
+	for (const [entryPoint, source] of Object.entries(dualistConfig.exports)) {
+		const { dir, name } = path.posix.parse(source);
+
+		const makeExport = (type: string) => {
+			const artifactDir = path.posix.join(outDir, type, dir);
+			return {
+				types: `./${artifactDir}/${name}.d.ts`,
+				default: `./${artifactDir}/${name}.js`,
+			};
+		};
+
+		exports[entryPoint] = {
+			import: makeExport('module'),
+			require: makeExport('commonjs'),
+		};
+
+		if (entryPoint === '.') {
+			packageJson.types = exports['.'].require.types;
+			packageJson.main = exports['.'].require.default;
+		}
+	}
+
+	packageJson.exports = exports;
+} finally {
+	delete packageJson.type;
+	await writeJsonFile('package.json', packageJson, { detectIndent: true });
 }
-
-packageJson.exports = exports;
-
-await writeJsonFile('package.json', packageJson, { detectIndent: true });
