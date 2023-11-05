@@ -53,6 +53,7 @@ try {
 	}
 
 	const exports: any = packageJson.exports ?? {};
+	packageJson.exports = exports;
 
 	for (const [entryPoint, source] of Object.entries(dualistConfig.exports)) {
 		const { dir, name } = path.posix.parse(source);
@@ -75,8 +76,6 @@ try {
 			packageJson.main = exports['.'].require.default;
 		}
 	}
-
-	packageJson.exports = exports;
 } finally {
 	delete packageJson.type;
 	await writeJsonFile('package.json', packageJson, { detectIndent: true });
