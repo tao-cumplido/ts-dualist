@@ -1,5 +1,6 @@
 import shigen from '@shigen/eslint-plugin';
 import stylistic from '@stylistic/eslint-plugin';
+import ts from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 
 /** @type { import("eslint").Linter.FlatConfig[] } */
@@ -18,7 +19,10 @@ export default	[
 			'stylistic/semi': ['error'],
 
 			'shigen/group-imports': ['error'],
-			'shigen/sort-imports': ['error'],
+			'shigen/sort-imports': ['error', {
+				typesInGroup: 'top',
+				inlineTypes: 'end',
+			}],
 		},
 	},
 	{
@@ -26,8 +30,14 @@ export default	[
 		languageOptions: {
 			parser: tsParser,
 			parserOptions: {
-				project: 'tsconfig.json',
+				project: ['tsconfig.json', 'test/tsconfig.json'],
 			},
+		},
+		plugins: {
+			ts,
+		},
+		rules: {
+			'ts/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
 		},
 	},
 ];

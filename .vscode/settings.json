@@ -1,6 +1,7 @@
 {
 	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
+		"source.fixAll.eslint": "explicit"
 	},
-	"eslint.experimental.useFlatConfig": true
+	"eslint.experimental.useFlatConfig": true,
+	"typescript.tsdk": "node_modules/typescript/lib"
 }

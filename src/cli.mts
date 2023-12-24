@@ -5,27 +5,23 @@ import path from 'node:path';
 import { $ } from 'execa';
 import { parseTsconfig, type TsConfigJsonResolved } from 'get-tsconfig';
 import { loadJsonFile } from 'load-json-file';
+import { getFlag } from 'type-flag';
 import { writeJsonFile } from 'write-json-file';
 import z from 'zod';
 
 const args = process.argv.slice(2);
 
-if (args.find((value) => value === '--build' || value === '-b')) {
-	throw new Error(`Build mode not supported.`);
+if (getFlag('--build,-b,--watch,-w', Boolean)) {
+	throw new Error(`Build or watch mode not supported.`);
 }
 
-const projectIndex = args.findIndex((value) => value === '--project' || value === '-p');
-const project = args[projectIndex + 1] ?? 'tsconfig.json';
-
-if (project.startsWith('-') || project === args[0]) {
-	throw new Error(`invalid --project value`);
-}
-
-if (projectIndex >= 0) {
-	args.splice(projectIndex, 2);
-}
+const project = getFlag('--project,-p', String, args) ?? 'tsconfig.json';
 
 const tsConfig: TsConfigJsonResolved & Record<string, unknown> = parseTsconfig(project);
+const { compilerOptions = {} } = tsConfig;
+
+const outDir = getFlag('--outDir', String, args) ?? compilerOptions.outDir ?? 'dist';
+
 const packageJson = z.record(z.unknown()).parse(await loadJsonFile('package.json'));
 
 const dualistConfig = z.object({
@@ -34,22 +30,21 @@ const dualistConfig = z.object({
 	}),
 }).parse(tsConfig['ts-dualist'] ?? {});
 
-const { compilerOptions = {} } = tsConfig;
-
-const { outDir = 'dist' } = compilerOptions;
-
 try {
 	for (const type of ['module', 'commonjs']) {
 		packageJson.type = type;
 		await writeJsonFile('package.json', packageJson, { detectIndent: true });
 
+		const typeDir = path.join(outDir, type);
+		const tsBuildInfoFile = path.join(typeDir, '.tsbuildinfo');
+
 		if (args.length) {
-			await $`tsc --project ${project} --outDir ${path.join(outDir, type)} ${args}`;
+			await $`tsc --project ${project} --outDir ${typeDir} --tsBuildInfoFile ${tsBuildInfoFile} ${args}`;
 		} else {
-			await $`tsc --project ${project} --outDir ${path.join(outDir, type)}`;
+			await $`tsc --project ${project} --outDir ${typeDir} --tsBuildInfoFile ${tsBuildInfoFile}`;
 		}
 
-		await writeJsonFile(path.join(outDir, type, 'package.json'), { type });
+		await writeJsonFile(path.join(typeDir, 'package.json'), { type });
 	}
 
 	const exports: any = packageJson.exports ?? {};
@@ -72,6 +67,8 @@ try {
 		};
 
 		if (entryPoint === '.') {
+			delete packageJson.types;
+			delete packageJson.main;
 			packageJson.types = exports['.'].require.types;
 			packageJson.main = exports['.'].require.default;
 		}

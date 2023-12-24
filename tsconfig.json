@@ -5,5 +5,6 @@
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
 		"module": "nodenext"
-	}
+	},
+	"exclude": ["test/**/*"]
 }
