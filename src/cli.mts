@@ -39,9 +39,9 @@ try {
 		const tsBuildInfoFile = path.join(typeDir, '.tsbuildinfo');
 
 		if (args.length) {
-			await $`tsc --project ${project} --outDir ${typeDir} --tsBuildInfoFile ${tsBuildInfoFile} ${args}`;
+			await $`tsc --project ${project} --outDir ${typeDir} --incremental --tsBuildInfoFile ${tsBuildInfoFile} ${args}`;
 		} else {
-			await $`tsc --project ${project} --outDir ${typeDir} --tsBuildInfoFile ${tsBuildInfoFile}`;
+			await $`tsc --project ${project} --outDir ${typeDir} --incremental --tsBuildInfoFile ${tsBuildInfoFile}`;
 		}
 
 		await writeJsonFile(path.join(typeDir, 'package.json'), { type });

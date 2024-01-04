@@ -10,13 +10,23 @@
 		"tscd": "dist/cli.mjs"
 	},
 	"scripts": {
-		"build": "tsc --build"
+		"build": "wireit",
+		"test": "wireit"
+	},
+	"wireit": {
+		"build": {
+			"command": "tsc --build"
+		},
+		"test": {
+			"command": "tsx --tsconfig test/tsconfig.json --test test/spec.ts",
+			"dependencies": ["build"]
+		}
 	},
 	"dependencies": {
 		"execa": "^8.0.1",
 		"get-tsconfig": "^4.7.2",
 		"load-json-file": "^7.0.1",
-		"type-flag": "3.0.0",
+		"type-flag": "^3.0.0",
 		"write-json-file": "^5.0.0",
 		"zod": "^3.22.4"
 	},
@@ -28,7 +38,7 @@
 		"@types/eslint": "8.44.9",
 		"@types/node": "20.10.5",
 		"@shigen/eslint-plugin": "0.3.1",
-		"@shigen/test": "0.2.0",
+		"@shigen/test": "0.2.1",
 		"@stylistic/eslint-plugin": "1.5.1",
 		"@typescript-eslint/eslint-plugin": "6.15.0",
 		"@typescript-eslint/parser": "6.15.0",
@@ -37,6 +47,7 @@
 		"manten": "1.2.0",
 		"type-fest": "4.8.3",
 		"typescript": "5.3.3",
-		"tsx": "4.6.2"
+		"tsx": "4.6.2",
+		"wireit": "0.14.1"
 	}
 }

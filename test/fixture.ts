@@ -22,7 +22,7 @@ export async function setupFixture({
 			name: 'ts-dualist-test-fixture',
 			version: '0.0.0',
 			dependencies: {
-				typescript: tsVersion,
+				'typescript': `~${tsVersion}.0`,
 			},
 		}),
 		'tsconfig.json': jsonData(tsConfig({
