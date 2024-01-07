@@ -25,6 +25,9 @@ dependencies:
     version: 3.22.4
 
 devDependencies:
+  '@shigen/code-tag':
+    specifier: 0.1.0
+    version: 0.1.0
   '@shigen/eslint-plugin':
     specifier: 0.3.1
     version: 0.3.1(@typescript-eslint/parser@6.15.0)(eslint@8.56.0)
@@ -400,6 +403,15 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
+    dev: true
+
+  /@shigen/code-tag@0.1.0:
+    resolution: {integrity: sha512-OU/67s6xB5oEtVhIQLIa7tGYuUQT/9+ArdWKeWLT9APgNCGEghszfSpMmVNrbVr7wk6lqA7ZzxhX+u77Voznsg==}
+    dependencies:
+      dedent: 1.5.1
+      type-fest: 4.9.0
+    transitivePeerDependencies:
+      - babel-plugin-macros
     dev: true
 
   /@shigen/eslint-plugin@0.3.1(@typescript-eslint/parser@6.15.0)(eslint@8.56.0):
@@ -872,6 +884,15 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
+    dev: true
+
+  /dedent@1.5.1:
+    resolution: {integrity: sha512-+LxW+KLWxu3HW3M2w2ympwtqPrqYRzU8fqi6Fhd18fBALe15blJPI/I4+UHveMVG6lJqB4JNd4UG0S5cnVHwIg==}
+    peerDependencies:
+      babel-plugin-macros: ^3.1.0
+    peerDependenciesMeta:
+      babel-plugin-macros:
+        optional: true
     dev: true
 
   /deep-is@0.1.4:
@@ -1730,6 +1751,11 @@ packages:
 
   /type-fest@4.8.3:
     resolution: {integrity: sha512-//BaTm14Q/gHBn09xlnKNqfI8t6bmdzx2DXYfPBNofN0WUybCEUDcbCWcTa0oF09lzLjZgPphXAsvRiMK0V6Bw==}
+    engines: {node: '>=16'}
+    dev: true
+
+  /type-fest@4.9.0:
+    resolution: {integrity: sha512-KS/6lh/ynPGiHD/LnAobrEFq3Ad4pBzOlJ1wAnJx9N4EYoqFhMfLIBjUT2UEx4wg5ZE+cC1ob6DCSpppVo+rtg==}
     engines: {node: '>=16'}
     dev: true
 
