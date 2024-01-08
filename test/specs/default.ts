@@ -1,11 +1,11 @@
-import assert from "node:assert";
-import { test } from "node:test";
+import assert from 'node:assert';
+import { test } from 'node:test';
 
-import type { PackageJson } from "type-fest";
+import type { PackageJson } from 'type-fest';
 
-import { setupFixture } from "../fixture.js";
+import { setupFixture } from '../fixture.js';
 
-export const spec = (cliPath: string, tsVersion: string) => {
+export default (cliPath: string, tsVersion: string) => {
 	test('default', async () => {
 		const fixture = await setupFixture({ tsVersion });
 			await fixture.run`node ${cliPath}`;
@@ -24,5 +24,11 @@ export const spec = (cliPath: string, tsVersion: string) => {
 					},
 				},
 			});
+
+			assert.equal(packageJson.main, './dist/commonjs/index.js');
+			assert.equal(packageJson.types, './dist/commonjs/index.d.ts');
+
+			assert(await fixture.exists('dist/commonjs/index.js'));
+			assert(await fixture.exists('dist/module/index.js'));
 	});
 };

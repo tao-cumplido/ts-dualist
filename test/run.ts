@@ -1,11 +1,11 @@
-import type { Transform } from "node:stream";
-import fs from "node:fs/promises";
-import path from "node:path";
-import { run } from "node:test";
-import { spec } from "node:test/reporters";
+import type { Transform } from 'node:stream';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { run } from 'node:test';
+import { spec } from 'node:test/reporters';
 
 import { code } from '@shigen/code-tag';
-import { typeFlag } from "type-flag";
+import { typeFlag } from 'type-flag';
 
 const { flags } = typeFlag({
 	tsVersion: {
@@ -39,7 +39,7 @@ for (const tsVersion of flags.tsVersion) {
 
 			describe(${`TS ${tsVersion}`}, async () => {
 				for (const specPath of ${specImportPaths}) {
-					const { spec } = await import(specPath);
+					const { default: spec } = await import(specPath);
 					spec(${cliPath}, ${tsVersion});
 				}
 			});

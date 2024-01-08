@@ -31,7 +31,7 @@ export async function setupFixture({
 			},
 		})),
 		'src': sourceTree({
-			'index.ts': textData(`export default null;`),
+			'index.ts': textData('export default null;'),
 		}),
 	});
 

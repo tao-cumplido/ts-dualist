@@ -17,6 +17,7 @@ export default	[
 			'stylistic/array-element-newline': ['error', 'consistent'],
 			'stylistic/comma-dangle': ['error', 'always-multiline'],
 			'stylistic/semi': ['error'],
+			'stylistic/quotes': ['error', 'single', { allowTemplateLiterals: true }],
 
 			'shigen/group-imports': ['error'],
 			'shigen/sort-imports': ['error', {
