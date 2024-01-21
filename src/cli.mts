@@ -15,14 +15,30 @@ if (getFlag('--build,-b,--watch,-w', Boolean)) {
 	throw new Error(`Build or watch mode not supported.`);
 }
 
+if (typeof getFlag('--incremental', Boolean) === 'boolean' || getFlag('--tsBuildInfoFile', String)) {
+	throw new Error(`The '--incremental' and '--tsBuildInfoFile' options may not be used as they are automatically set by ts-dualist.`);
+}
+
+if (typeof getFlag('--declaration,-d', Boolean) === 'boolean') {
+	throw new Error(`The '--declaration' option may not be used as it is automatically set by ts-dualist.`);
+}
+
 const project = getFlag('--project,-p', String, args) ?? 'tsconfig.json';
 
 const tsConfig: TsConfigJsonResolved & Record<string, unknown> = parseTsconfig(project);
 const { compilerOptions = {} } = tsConfig;
 
+if (compilerOptions.declarationDir || getFlag('--declarationDir', String)) {
+	throw new Error(`The 'declarationDir' option may not be set.`);
+}
+
 const outDir = getFlag('--outDir', String, args) ?? compilerOptions.outDir ?? 'dist';
 
 const packageJson = z.record(z.unknown()).parse(await loadJsonFile('package.json'));
+
+if ('type' in packageJson) {
+	throw new Error(`The 'type' field in package.json may not be set.`);
+}
 
 const dualistConfig = z.object({
 	exports: z.record(z.string()).default({
@@ -39,9 +55,9 @@ try {
 		const tsBuildInfoFile = path.join(typeDir, '.tsbuildinfo');
 
 		if (args.length) {
-			await $`tsc --project ${project} --outDir ${typeDir} --incremental --tsBuildInfoFile ${tsBuildInfoFile} ${args}`;
+			await $`tsc --project ${project} --outDir ${typeDir} --declaration --incremental --tsBuildInfoFile ${tsBuildInfoFile} ${args}`;
 		} else {
-			await $`tsc --project ${project} --outDir ${typeDir} --incremental --tsBuildInfoFile ${tsBuildInfoFile}`;
+			await $`tsc --project ${project} --outDir ${typeDir} --declaration --incremental --tsBuildInfoFile ${tsBuildInfoFile}`;
 		}
 
 		await writeJsonFile(path.join(typeDir, 'package.json'), { type });
@@ -49,6 +65,9 @@ try {
 
 	const exports: any = packageJson.exports ?? {};
 	packageJson.exports = exports;
+
+	delete packageJson.types;
+	delete packageJson.main;
 
 	for (const [entryPoint, source] of Object.entries(dualistConfig.exports)) {
 		const { dir, name } = path.posix.parse(source);
@@ -67,8 +86,6 @@ try {
 		};
 
 		if (entryPoint === '.') {
-			delete packageJson.types;
-			delete packageJson.main;
 			packageJson.types = exports['.'].require.types;
 			packageJson.main = exports['.'].require.default;
 		}

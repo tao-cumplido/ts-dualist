@@ -1,10 +1,8 @@
-import type { Transform } from 'node:stream';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { run } from 'node:test';
-import { spec } from 'node:test/reporters';
 
 import { code } from '@shigen/code-tag';
+import { $ } from 'execa';
 import { typeFlag } from 'type-flag';
 
 const { flags } = typeFlag({
@@ -47,4 +45,4 @@ for (const tsVersion of flags.tsVersion) {
 	);
 }
 
-run({ files: flags.tsVersion.map((tsVersion) => path.resolve(`./.test/${tsVersion}.js`))}).compose(spec as unknown as () => Transform).pipe(process.stdout);
+await $({ stdio: 'inherit' })`tsx --tsconfig test/tsconfig.json --test-reporter spec --test ${flags.tsVersion.map((tsVersion) => path.resolve(`./.test/${tsVersion}.js`))}`;

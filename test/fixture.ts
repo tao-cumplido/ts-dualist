@@ -8,26 +8,35 @@ interface SourceTree {
 
 interface FixtureConfig {
 	readonly tsVersion: string;
-	readonly tsConfig?: (base: TsConfigJson) => TsConfigJson;
+	readonly tsConfig?: (base: TsConfigJson) => {
+		readonly fileName?: string;
+		readonly config?: TsConfigJson;
+	};
 	readonly sourceTree?: (base: SourceTree) => DataTree;
+	readonly packageJson?: (base: PackageJson) => PackageJson;
 }
 
 export async function setupFixture({
 	tsVersion,
-	tsConfig = (base) => base,
+	tsConfig = () => ({}),
 	sourceTree = (base) => base,
+	packageJson  = (base) => base,
 }: FixtureConfig): ReturnType<typeof createFixture> {
+	const tsConfigBase: TsConfigJson = {
+		compilerOptions: {
+			rootDir: 'src',
+		},
+	};
+
+	const { fileName: tsConfigFileName = 'tsconfig.json', config: tsConfigData = tsConfigBase } = tsConfig(tsConfigBase);
+
 	const fixture = await createFixture({
-		'package.json': jsonData<PackageJson>({
+		[tsConfigFileName]: jsonData(tsConfigData),
+		'package.json': jsonData<PackageJson>(packageJson({
 			name: 'ts-dualist-test-fixture',
 			version: '0.0.0',
 			dependencies: {
 				'typescript': `~${tsVersion}.0`,
-			},
-		}),
-		'tsconfig.json': jsonData(tsConfig({
-			compilerOptions: {
-				rootDir: 'src',
 			},
 		})),
 		'src': sourceTree({
