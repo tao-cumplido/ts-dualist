@@ -33,12 +33,15 @@ for (const tsVersion of flags.tsVersion) {
 	await fs.writeFile(
 		`.test/${tsVersion}.js`,
 		code.js`
-			import { describe } from 'node:test';
+			import path from "node:path";
+			import { describe } from "node:test";
 
-			describe(${`TS ${tsVersion}`}, async () => {
+			describe(${`TS ${tsVersion}`}, () => {
 				for (const specPath of ${specImportPaths}) {
-					const { default: spec } = await import(specPath);
-					spec(${cliPath}, ${tsVersion});
+					describe(path.parse(specPath).name, async() => {
+						const { default: spec } = await import(specPath);
+						spec(${cliPath}, ${tsVersion});
+					});
 				}
 			});
 		`,
