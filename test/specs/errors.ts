@@ -6,14 +6,14 @@ import { setupFixture } from '../fixture.js';
 export default (cliPath: string, tsVersion: string) => {
 	test('invalid flags', async () => {
 		const fixture = await setupFixture({ tsVersion });
-		assert.rejects(() => fixture.run`node ${cliPath} --build`);
-		assert.rejects(() => fixture.run`node ${cliPath} -b`);
-		assert.rejects(() => fixture.run`node ${cliPath} --watch`);
-		assert.rejects(() => fixture.run`node ${cliPath} -w`);
-		assert.rejects(() => fixture.run`node ${cliPath} --incremental`);
-		assert.rejects(() => fixture.run`node ${cliPath} --tsBuildInfoFile`);
-		assert.rejects(() => fixture.run`node ${cliPath} --declarationDir`);
-		assert.rejects(() => fixture.run`node ${cliPath} --declaration`);
+		await assert.rejects(() => fixture.run`node ${cliPath} --build`);
+		await assert.rejects(() => fixture.run`node ${cliPath} -b`);
+		await assert.rejects(() => fixture.run`node ${cliPath} --watch`);
+		await assert.rejects(() => fixture.run`node ${cliPath} -w`);
+		await assert.rejects(() => fixture.run`node ${cliPath} --incremental`);
+		await assert.rejects(() => fixture.run`node ${cliPath} --tsBuildInfoFile test`);
+		await assert.rejects(() => fixture.run`node ${cliPath} --declarationDir test`);
+		await assert.rejects(() => fixture.run`node ${cliPath} --declaration`);
 	});
 
 	test('invalid declarationDir option', async () => {
@@ -30,7 +30,7 @@ export default (cliPath: string, tsVersion: string) => {
 			},
 		});
 
-		assert.rejects(() => fixture.run`node ${cliPath}`);
+		await assert.rejects(() => fixture.run`node ${cliPath}`);
 	});
 
 	test('invalid explicit module type', async () => {
@@ -42,6 +42,6 @@ export default (cliPath: string, tsVersion: string) => {
 			},
 		});
 
-		assert.rejects(() => fixture.run`node ${cliPath}`);
+		await assert.rejects(() => fixture.run`node ${cliPath}`);
 	});
 };
