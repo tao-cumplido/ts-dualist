@@ -2,7 +2,7 @@
 
 import path from 'node:path';
 
-import { $ } from 'execa';
+import { execa } from 'execa';
 import { parseTsconfig, type TsConfigJsonResolved } from 'get-tsconfig';
 import { loadJsonFile } from 'load-json-file';
 import { getFlag } from 'type-flag';
@@ -33,6 +33,7 @@ if (compilerOptions.declarationDir || getFlag('--declarationDir', String)) {
 }
 
 const outDir = getFlag('--outDir', String, args) ?? compilerOptions.outDir ?? 'dist';
+const declarationMap = getFlag('--declarationMap', Boolean, args) ?? compilerOptions.declarationMap ?? getFlag('--sourceMap', Boolean) ?? compilerOptions.sourceMap ?? false;
 
 const packageJson = z.record(z.unknown()).parse(await loadJsonFile('package.json'));
 
@@ -54,11 +55,22 @@ try {
 		const typeDir = path.join(outDir, type);
 		const tsBuildInfoFile = path.join(typeDir, '.tsbuildinfo');
 
-		if (args.length) {
-			await $`tsc --project ${project} --outDir ${typeDir} --declaration --incremental --tsBuildInfoFile ${tsBuildInfoFile} ${args}`;
-		} else {
-			await $`tsc --project ${project} --outDir ${typeDir} --declaration --incremental --tsBuildInfoFile ${tsBuildInfoFile}`;
-		}
+		await execa(
+			'tsc',
+			[
+				'--project',
+				project,
+				'--outDir',
+				typeDir,
+				'--declaration',
+				'--declarationMap',
+				`${declarationMap}`,
+				'--incremental',
+				'--tsBuildInfoFile',
+				tsBuildInfoFile,
+				...args,
+			],
+		);
 
 		await writeJsonFile(path.join(typeDir, 'package.json'), { type });
 	}

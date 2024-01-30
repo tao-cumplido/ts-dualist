@@ -4,7 +4,7 @@ import {test} from 'node:test';
 import { setupFixture } from '../fixture.js';
 
 export default (cliPath: string, tsVersion: string) => {
-	test('project', async () => {
+	test('tsconfig', async () => {
 		const fixture = await setupFixture({
 			tsVersion,
 			tsConfig: (base) => {
@@ -13,7 +13,7 @@ export default (cliPath: string, tsVersion: string) => {
 					config: {
 						compilerOptions: {
 							...base.compilerOptions,
-							declarationMap: true,
+							outDir: 'out',
 						},
 					},
 				};
@@ -24,7 +24,16 @@ export default (cliPath: string, tsVersion: string) => {
 
 		await fixture.run`node ${cliPath} -p project.json`;
 
+		assert(await fixture.exists('out/commonjs/index.js'));
+		assert(await fixture.exists('out/module/index.js'));
+	});
+
+	test('sourcemap', async () => {
+		const fixture = await setupFixture({ tsVersion });
+
+		await fixture.run`node ${cliPath} --sourceMap`;
+
+		assert(await fixture.exists('dist/commonjs/index.js.map'));
 		assert(await fixture.exists('dist/commonjs/index.d.ts.map'));
-		assert(await fixture.exists('dist/module/index.d.ts.map'));
 	});
 };
