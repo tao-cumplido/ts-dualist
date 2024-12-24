@@ -5,7 +5,7 @@ import { setupFixture } from '../fixture.js';
 
 export default (cliPath: string, tsVersion: string) => {
 	test('tsconfig', async () => {
-		const fixture = await setupFixture({
+		await using fixture = await setupFixture({
 			tsVersion,
 			tsConfig: (base) => {
 				return {
@@ -29,7 +29,7 @@ export default (cliPath: string, tsVersion: string) => {
 	});
 
 	test('sourcemap', async () => {
-		const fixture = await setupFixture({ tsVersion });
+		await using fixture = await setupFixture({ tsVersion });
 
 		await fixture.run`node ${cliPath} --sourceMap`;
 

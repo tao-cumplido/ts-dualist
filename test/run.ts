@@ -16,6 +16,10 @@ const { flags } = typeFlag({
 			'5.1',
 			'5.2',
 			'5.3',
+			'5.4',
+			'5.5',
+			'5.6',
+			'5.7',
 		],
 	},
 });
@@ -32,7 +36,7 @@ await fs.mkdir('.test', { recursive: true });
 for (const tsVersion of flags.tsVersion) {
 	await fs.writeFile(
 		`.test/${tsVersion}.js`,
-		code.js`
+		code.js/* js */`
 			import path from "node:path";
 			import { describe } from "node:test";
 

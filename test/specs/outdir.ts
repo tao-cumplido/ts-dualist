@@ -7,7 +7,7 @@ import { setupFixture } from '../fixture.js';
 
 export default (cliPath: string, tsVersion: string) => {
 	test('cli flag', async () => {
-		const fixture = await setupFixture({ tsVersion });
+		await using fixture = await setupFixture({ tsVersion });
 
 		await fixture.run`node ${cliPath} --outDir out`;
 
@@ -36,7 +36,7 @@ export default (cliPath: string, tsVersion: string) => {
 	});
 
 	test('tsconfig compiler options', async () => {
-		const fixture = await setupFixture({
+		await using fixture = await setupFixture({
 			tsVersion,
 			tsConfig: (base) => {
 				return {

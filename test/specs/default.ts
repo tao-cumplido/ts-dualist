@@ -7,7 +7,7 @@ import { setupFixture } from '../fixture.js';
 
 export default (cliPath: string, tsVersion: string) => {
 	test('default', async () => {
-		const fixture = await setupFixture({ tsVersion });
+		await using fixture = await setupFixture({ tsVersion });
 
 		assert(await fixture.exists('tsconfig.json'));
 

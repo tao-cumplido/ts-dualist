@@ -5,7 +5,7 @@ import { setupFixture } from '../fixture.js';
 
 export default (cliPath: string, tsVersion: string) => {
 	test('invalid flags', async () => {
-		const fixture = await setupFixture({ tsVersion });
+		await using fixture = await setupFixture({ tsVersion });
 		await assert.rejects(() => fixture.run`node ${cliPath} --build`);
 		await assert.rejects(() => fixture.run`node ${cliPath} -b`);
 		await assert.rejects(() => fixture.run`node ${cliPath} --watch`);
@@ -17,7 +17,7 @@ export default (cliPath: string, tsVersion: string) => {
 	});
 
 	test('invalid declarationDir option', async () => {
-		const fixture = await setupFixture({
+		await using fixture = await setupFixture({
 			tsVersion,
 			tsConfig: () => {
 				return {
@@ -34,7 +34,7 @@ export default (cliPath: string, tsVersion: string) => {
 	});
 
 	test('invalid explicit module type', async () => {
-		const fixture = await setupFixture({
+		await using fixture = await setupFixture({
 			tsVersion,
 			packageJson: (base) => {
 				base.type = 'commonjs';

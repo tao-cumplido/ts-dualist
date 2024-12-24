@@ -7,7 +7,7 @@ import { setupFixture } from '../fixture.js';
 
 export default (cliPath: string, tsVersion: string) => {
 	test('entry points', async () => {
-		const fixture = await setupFixture({
+		await using fixture = await setupFixture({
 			tsVersion,
 			tsConfig: (base) => {
 				return {
@@ -47,5 +47,30 @@ export default (cliPath: string, tsVersion: string) => {
 		assert(await fixture.exists('dist/module/index.js'));
 		assert(await fixture.exists('dist/commonjs/.tsbuildinfo'));
 		assert(await fixture.exists('dist/module/.tsbuildinfo'));
+	});
+
+	test('imports', async () => {
+		await using fixture = await setupFixture({
+			tsVersion,
+			tsConfig: (base) => {
+				return {
+					config: {
+						...base,
+						'ts-dualist': {
+							imports: {
+								'#*.js': './*.js',
+							},
+						},
+					},
+				};
+			},
+		});
+
+		await fixture.run`node ${cliPath}`;
+
+		for (const type of ['module', 'commonjs']) {
+			const packageJson: PackageJson = JSON.parse(await fixture.fs.readFile(`dist/${type}/package.json`, 'utf-8'));
+			assert.deepEqual(packageJson.imports, { '#*.js': './*.js' });
+		}
 	});
 };

@@ -45,6 +45,7 @@ const dualistConfig = z.object({
 	exports: z.record(z.string()).default({
 		'.': 'index.ts',
 	}),
+	imports: z.record(z.string()).optional(),
 }).parse(tsConfig['ts-dualist'] ?? {});
 
 try {
@@ -72,7 +73,9 @@ try {
 			],
 		);
 
-		await writeJsonFile(path.join(typeDir, 'package.json'), { type });
+		const targetPackage = dualistConfig.imports ? { type, imports: dualistConfig.imports } : { type };
+
+		await writeJsonFile(path.join(typeDir, 'package.json'), targetPackage);
 	}
 
 	const exports: any = packageJson.exports ?? {};
