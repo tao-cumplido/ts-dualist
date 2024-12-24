@@ -45,8 +45,6 @@
 		"@typescript-eslint/parser": "6.15.0",
 		"eslint": "8.56.0",
 		"execa": "8.0.1",
-		"fs-fixture": "1.2.0",
-		"manten": "1.2.0",
 		"type-fest": "4.8.3",
 		"typescript": "5.3.3",
 		"tsx": "4.6.2",
